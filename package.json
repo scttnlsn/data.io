@@ -1,0 +1,17 @@
+{
+    "name": "resource.io",
+    "version": "0.0.0",
+    "description": "",
+    "homepage": "http://github.com/scttnlsn/resource.io",
+
+    "author": {
+        "name": "Scott Nelson",
+        "email": "scott@scttnlsn.com",
+        "web": "http://scttnlsn.com"
+    },
+    
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/scttnlsn/resource.io.git"
+    }
+}
