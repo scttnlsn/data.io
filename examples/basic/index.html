@@ -55,7 +55,7 @@
                 messages.emit('sync', 'list', {}, function(err, messages) {
                     if (err) return alert(err.message);
 
-                    $.each(messages, function(message) {
+                    $.each(messages, function(i, message) {
                         store.put(message);
                     });
                 });
