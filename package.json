@@ -13,5 +13,13 @@
     "repository": {
         "type": "git",
         "url": "git://github.com/scttnlsn/resource.io.git"
+    },
+
+    "scripts": {
+        "test": "./node_modules/.bin/mocha"
+    },
+
+    "devDependencies": {
+        "mocha": "1.8.x"
     }
 }
