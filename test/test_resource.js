@@ -52,6 +52,31 @@ describe('Resource', function() {
             this.resource.handle({}, {}, done);
         });
 
+        it('calls layers in order', function(done) {
+            var count = 0;
+            var value = 0;
+
+            this.resource.use(function(req, res, next) {
+                count++;
+                value = 1;
+                next();
+            });
+
+            this.resource.use(function(req, res, next) {
+                count++;
+                value = 2;
+                next();
+            });
+
+            this.resource.handle({}, {}, function(err) {
+                if (err) return done(err);
+
+                assert.equal(count, 2);
+                assert.equal(value, 2);
+                done();
+            });
+        });
+
         describe('when error occurs', function() {
             describe('when error is passed down the stack', function() {
                 beforeEach(function() {
