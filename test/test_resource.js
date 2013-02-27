@@ -6,6 +6,14 @@ describe('Resource', function() {
         this.resource = new Resource();
     });
 
+    it('has initialize method', function() {
+        this.resource.initialize();
+    });
+
+    it('has listeners method', function() {
+        this.resource.listeners();
+    });
+
     describe('when handling request', function() {
         it('calls first layer', function(done) {
             this.resource.use(function(req, res, next) {
