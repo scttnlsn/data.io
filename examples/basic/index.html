@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+
+        <script>
+            $(function() {
+                // TODO: Create client-side abstraction for buckets and sync actions
+
+                var socket = io.connect();
+                var messages = socket.of('messages');
+
+                var store = (function() {
+                    var models = {};
+
+                    return {
+                        get: function(id) {
+                            return models[id];
+                        },
+                        put: function(data) {
+                            models[data.id] = data;
+                            render();
+                        },
+                        remove: function(data) {
+                            delete models[data.id];
+                            render();
+                        },
+                        all: function() {
+                            return $.map(models, function(data) {
+                                return data;
+                            });
+                        }
+                    };
+                })();
+
+                function render() {
+                    var els = $.map(store.all(), function(message) {
+                        var a = $('<a href="#" class="delete">[x]<a>');
+                        a.on('click', function() {
+                            messages.emit('sync', 'delete', message, function(err) {
+                                if (err) return alert(err.message);
+                                store.remove(message);
+                            });
+
+                            return false;
+                        });
+
+                        return $('<li>').append(message.text).append(a);
+                    });
+
+                    $('#messages').empty().append(els);
+                }
+
+                messages.emit('sync', 'list', {}, function(err, messages) {
+                    if (err) return alert(err.message);
+
+                    $.each(messages, function(message) {
+                        store.put(message);
+                    });
+                });
+
+                messages.on('sync', function(action, data) {
+                    switch (action) {
+                        case 'create':
+                        case 'update':
+                            store.put(data);
+                            break;
+                        case 'delete':
+                            store.remove(data);
+                            break;
+                    }
+                });
+
+                $('#send').on('click', function() {
+                    var text = $('#message').val();
+                    $('#message').val('');
+
+                    messages.emit('sync', 'create', { text: text }, {}, function(err, message) {
+                        store.put(message);
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <p>
+            <input id="message" type="text">
+            <input id="send" type="submit" value="Send">
+        </p>
+
+        <ul id="messages"></ul>
+    </body>
+</html>
