@@ -20,6 +20,7 @@
     },
 
     "devDependencies": {
-        "mocha": "1.8.x"
+        "mocha": "1.8.x",
+        "sinon": "1.6.x"
     }
 }

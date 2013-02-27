@@ -6,12 +6,9 @@ describe('Bucket', function() {
         this.bucket = new Bucket();
     });
 
-    it('has initialize method', function() {
-        this.bucket.initialize();
-    });
-
-    it('has listeners method', function() {
-        this.bucket.listeners();
+    it('is an event emitter', function(done) {
+        this.bucket.on('foo', done);
+        this.bucket.emit('foo');
     });
 
     describe('when handling request', function() {
