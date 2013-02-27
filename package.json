@@ -1,8 +1,8 @@
 {
-    "name": "resource.io",
+    "name": "data.io",
     "version": "0.0.0",
     "description": "",
-    "homepage": "http://github.com/scttnlsn/resource.io",
+    "homepage": "http://github.com/scttnlsn/data.io",
 
     "author": {
         "name": "Scott Nelson",
@@ -12,7 +12,7 @@
     
     "repository": {
         "type": "git",
-        "url": "git://github.com/scttnlsn/resource.io.git"
+        "url": "git://github.com/scttnlsn/data.io.git"
     },
 
     "scripts": {

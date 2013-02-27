@@ -1,82 +1,82 @@
 var assert = require('assert');
-var Resource = require('../lib/resource');
+var Bucket = require('../lib/bucket');
 
-describe('Resource', function() {
+describe('Bucket', function() {
     beforeEach(function() {
-        this.resource = new Resource();
+        this.bucket = new Bucket();
     });
 
     it('has initialize method', function() {
-        this.resource.initialize();
+        this.bucket.initialize();
     });
 
     it('has listeners method', function() {
-        this.resource.listeners();
+        this.bucket.listeners();
     });
 
     describe('when handling request', function() {
         it('calls first layer', function(done) {
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 done();
             });
 
-            this.resource.handle({}, {});
+            this.bucket.handle({}, {});
         });
 
         it('passes request and response objects to layer', function(done) {
             var a = {};
             var b = {};
 
-            this.resource.use(function(req, res) {
+            this.bucket.use(function(req, res) {
                 assert.equal(req, a);
                 assert.ok(res, b);
                 done();
             });
 
-            this.resource.handle(a, b);
+            this.bucket.handle(a, b);
         });
 
         it('passes control to the next layer', function(done) {
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 next();
             });
 
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 done();
             });
 
-            this.resource.handle({}, {});
+            this.bucket.handle({}, {});
         });
 
         it('calls callback if control reaches the bottom of stack', function(done) {
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 next();
             });
 
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 next();
             });
 
-            this.resource.handle({}, {}, done);
+            this.bucket.handle({}, {}, done);
         });
 
         it('calls layers in order', function(done) {
             var count = 0;
             var value = 0;
 
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 count++;
                 value = 1;
                 next();
             });
 
-            this.resource.use(function(req, res, next) {
+            this.bucket.use(function(req, res, next) {
                 count++;
                 value = 2;
                 next();
             });
 
-            this.resource.handle({}, {}, function(err) {
+            this.bucket.handle({}, {}, function(err) {
                 if (err) return done(err);
 
                 assert.equal(count, 2);
@@ -88,26 +88,26 @@ describe('Resource', function() {
         describe('when error occurs', function() {
             describe('when error is passed down the stack', function() {
                 beforeEach(function() {
-                    this.resource.use(function(req, res, next) {
+                    this.bucket.use(function(req, res, next) {
                         next(new Error());
                     });
 
-                    this.resource.use(function(req, res, next) {
+                    this.bucket.use(function(req, res, next) {
                         done(new Error('This should never be called'));
                     });
                 });
 
                 it('passes any error to next accepting layer', function(done) {
-                    this.resource.use(function(err, req, res, next) {
+                    this.bucket.use(function(err, req, res, next) {
                         assert.ok(err);
                         done();
                     });
 
-                    this.resource.handle({}, {});
+                    this.bucket.handle({}, {});
                 });
 
                 it('passes error to callback if no layer accepts it', function(done) {
-                    this.resource.handle({}, {}, function(err) {
+                    this.bucket.handle({}, {}, function(err) {
                         assert.ok(err);
                         done();
                     });
@@ -116,22 +116,22 @@ describe('Resource', function() {
 
             describe('when error is thrown', function() {
                 beforeEach(function() {
-                    this.resource.use(function(req, res, next) {
+                    this.bucket.use(function(req, res, next) {
                         throw new Error();
                     });
 
-                    this.resource.use(function(req, res, next) {
+                    this.bucket.use(function(req, res, next) {
                         done(new Error('This should never be called'));
                     });
                 });
 
                 it('catches error and passes it down the stack', function(done) {
-                    this.resource.use(function(err, req, res, next) {
+                    this.bucket.use(function(err, req, res, next) {
                         assert.ok(err);
                         done();
                     });
 
-                    this.resource.handle({}, {});
+                    this.bucket.handle({}, {});
                 });
             });
         });
@@ -140,12 +140,12 @@ describe('Resource', function() {
             it('calls all layers by default', function(done) {
                 var count = 0;
 
-                this.resource.use(function(req, res, next) {
+                this.bucket.use(function(req, res, next) {
                     count++;
                     next();
                 });
 
-                this.resource.handle({ action: 'foo' }, {}, function(err) {
+                this.bucket.handle({ action: 'foo' }, {}, function(err) {
                     if (err) return done(err);
 
                     assert.equal(count, 1);
@@ -156,22 +156,22 @@ describe('Resource', function() {
             it('only calls layers with corresponding action', function(done) {
                 var counts = { one: 0, two: 0, three: 0 };
 
-                this.resource.use(function(req, res, next) {
+                this.bucket.use(function(req, res, next) {
                     counts.one++;
                     next();
                 });
 
-                this.resource.use('foo', function(req, res, next) {
+                this.bucket.use('foo', function(req, res, next) {
                     counts.two++;
                     next();
                 });
 
-                this.resource.use('bar', function(req, res, next) {
+                this.bucket.use('bar', function(req, res, next) {
                     counts.three++;
                     next();
                 });
 
-                this.resource.handle({ action: 'foo' }, {}, function(err) {
+                this.bucket.handle({ action: 'foo' }, {}, function(err) {
                     if (err) return done(err);
 
                     assert.equal(counts.one, 1);
@@ -185,20 +185,20 @@ describe('Resource', function() {
                 var self = this;
                 var counts = { one: 0, two: 0 };
 
-                this.resource.use('foo', 'bar', function(req, res, next) {
+                this.bucket.use('foo', 'bar', function(req, res, next) {
                     counts.one++;
                     next();
                 });
 
-                this.resource.use('foo', function(req, res, next) {
+                this.bucket.use('foo', function(req, res, next) {
                     counts.two++;
                     next();
                 });
 
-                this.resource.handle({ action: 'foo' }, {}, function(err) {
+                this.bucket.handle({ action: 'foo' }, {}, function(err) {
                     if (err) return done(err);
 
-                    self.resource.handle({ action: 'bar' }, {}, function(err) {
+                    self.bucket.handle({ action: 'bar' }, {}, function(err) {
                         if (err) return done(err);
 
                         assert.equal(counts.one, 2);
