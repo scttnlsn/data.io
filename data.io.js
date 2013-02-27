@@ -32,8 +32,20 @@
         this.namespace().emit('sync', action, data, options, callback);
     };
 
-    Bucket.prototype.subscribe = function(callback) {
-        this.namespace().on('sync', callback);
+    Bucket.prototype.subscribe = function() {
+        var args = [].slice.apply(arguments);
+        var callback = args.pop();
+        var actions = args.length ? args : ['*'];
+
+        var valid = function(action) {
+            return actions.indexOf(action) !== -1;
+        };
+
+        this.namespace().on('sync', function(action, data) {
+            if (valid(action) || valid('*')) {
+                callback(data, { action: action });
+            }
+        });
     };
 
     return function(socket) {

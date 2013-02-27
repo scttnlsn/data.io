@@ -61,16 +61,12 @@
                     });
                 });
 
-                messages.subscribe(function(action, data) {
-                    switch (action) {
-                        case 'create':
-                        case 'update':
-                            store.put(data);
-                            break;
-                        case 'delete':
-                            store.remove(data);
-                            break;
-                    }
+                messages.subscribe('create', 'update', function(data) {
+                    store.put(data);
+                });
+
+                messages.subscribe('delete', function(data) {
+                    store.remove(data);
                 });
 
                 $('#send').on('click', function() {

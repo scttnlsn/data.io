@@ -38,13 +38,29 @@ describe('Client', function() {
 
         describe('when subscribing', function() {
             it('listens to sync event', function(done) {
-                this.bucket.subscribe(function(action, data) {
-                    assert.equal(action, 'foo');
+                this.bucket.subscribe(function(data, options) {
                     assert.deepEqual(data, { foo: 'bar' });
+                    assert.equal(options.action, 'foo');
                     done();
                 });
 
                 this.namespace.emit('sync', 'foo', { foo: 'bar' });
+            });
+
+            it('accepts optional action arguments', function(done) {
+                var count = 0;
+                var inc = function() {
+                    count++;
+                    if (count >= 3) done();
+                };
+
+                this.bucket.subscribe('foo', 'bar', inc);
+                this.bucket.subscribe('baz', inc);
+
+                this.namespace.emit('sync', 'foo', {});
+                this.namespace.emit('sync', 'bar', {});
+                this.namespace.emit('sync', 'baz', {});
+                this.namespace.emit('sync', 'qux', {});
             });
         });
     });
