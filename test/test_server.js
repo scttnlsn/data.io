@@ -35,6 +35,15 @@ describe('Server', function() {
             this.server.bucket('foo', this.bucket);
             assert.equal(this.server.bucket('foo'), this.bucket);
         });
+
+        it('creates buckets that do not exist', function() {
+            var b1 = this.server.bucket('foo');
+            var b2 = this.server.bucket('foo');
+
+            assert.ok(b1);
+            assert.ok(b2);
+            assert.equal(b1, b2);
+        });
     });
 
     describe('when connecting', function() {
