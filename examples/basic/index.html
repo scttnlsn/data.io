@@ -3,13 +3,14 @@
     <head>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="/data.io.js"></script>
 
         <script>
             $(function() {
-                // TODO: Create client-side abstraction for buckets and sync actions
-
                 var socket = io.connect();
-                var messages = socket.of('messages');
+                var connection = data(socket);
+
+                var messages = connection.bucket('messages');
 
                 var store = (function() {
                     var models = {};
@@ -38,7 +39,7 @@
                     var els = $.map(store.all(), function(message) {
                         var a = $('<a href="#" class="delete">[x]<a>');
                         a.on('click', function() {
-                            messages.emit('sync', 'delete', message, function(err) {
+                            messages.sync('delete', message, function(err) {
                                 if (err) return alert(err.message);
                                 store.remove(message);
                             });
@@ -52,7 +53,7 @@
                     $('#messages').empty().append(els);
                 }
 
-                messages.emit('sync', 'list', {}, function(err, messages) {
+                messages.sync('list', function(err, messages) {
                     if (err) return alert(err.message);
 
                     $.each(messages, function(i, message) {
@@ -60,7 +61,7 @@
                     });
                 });
 
-                messages.on('sync', function(action, data) {
+                messages.subscribe(function(action, data) {
                     switch (action) {
                         case 'create':
                         case 'update':
@@ -76,7 +77,7 @@
                     var text = $('#message').val();
                     $('#message').val('');
 
-                    messages.emit('sync', 'create', { text: text }, {}, function(err, message) {
+                    messages.sync('create', { text: text }, {}, function(err, message) {
                         store.put(message);
                     });
                 });
