@@ -82,8 +82,10 @@ describe('Connection', function() {
 
                 assert.ok(sync.calledOnce);
 
-                var req = sync.getCall(0).args[0];
+                var response = sync.getCall(0).args[0];
+                var req = sync.getCall(0).args[1];
                 
+                assert.equal(response, 'my response');
                 assert.equal(req.action, 'foo');
                 assert.deepEqual(req.data, { foo: 'bar' });
                 assert.equal(req.baz, 'qux');
