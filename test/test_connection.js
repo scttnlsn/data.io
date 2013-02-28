@@ -82,15 +82,12 @@ describe('Connection', function() {
 
                 assert.ok(sync.calledOnce);
 
-                var response = sync.getCall(0).args[0];
-                var req = sync.getCall(0).args[1];
+                var ret = sync.getCall(0).args[0];
                 
-                assert.equal(response, 'my response');
-                assert.equal(req.action, 'foo');
-                assert.deepEqual(req.data, { foo: 'bar' });
-                assert.equal(req.baz, 'qux');
-                assert.equal(req.bucket, self.bucket);
-                assert.equal(req.client, self.client);
+                assert.equal(ret.result, 'my response');
+                assert.equal(ret.action, 'foo');
+                assert.equal(ret.bucket, self.bucket);
+                assert.equal(ret.client, self.client);
 
                 done();
             });
