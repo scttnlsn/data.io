@@ -113,8 +113,6 @@ When clients initiate a sync with the server a request object is created and pas
 * `bucket` - the bucket handling the sync
 * `client` - the Socket.IO client that initiated the request
 
-**TODO**: Implement `req.set(key, value)` and `req.get(key)` methods for middleware to store arbitrary data in the request.
-
 Response
 ---
 
@@ -124,8 +122,6 @@ Events
 ---
 
 When a client connects to a particular bucket a `connection` event is emitted on the bucket.  This can be used to perform any initialization, etc.
-
-**TODO**: Implement async handling of connection events (i.e. `var callback = this.async()`).
 
 ```javascript
 messages.on('connection', function(client) {
