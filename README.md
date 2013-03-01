@@ -40,7 +40,7 @@ On the client:
 
 ```html
 <script src="/socket.io/socket.io.js"></script>
-<script src="/data.io.js"></script>
+<script src="/socket.io/data.io.js"></script>
 
 <script>
     var socket = data(io.connect());
