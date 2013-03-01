@@ -213,7 +213,7 @@ Test
 
     npm test
 
-Liscence
+License
 ---
 
 Copyright (C) 2013 Scott Nelson
