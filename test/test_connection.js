@@ -9,15 +9,37 @@ describe('Connection', function() {
         this.client = {};
     });
 
-    it('emits connection event on bucket', function(done) {
-        var self = this;
+    describe('when connecting', function() {
+        it('emits connection event on bucket', function(done) {
+            var self = this;
 
-        this.bucket.on('connection', function(client) {
-            assert.equal(client, self.client);
-            done();
+            this.bucket.on('connection', function(client) {
+                assert.equal(client, self.client);
+                done();
+            });
+
+            this.connection = new Connection(this.bucket, this.client);
         });
 
-        this.connection = new Connection(this.bucket, this.client);
+        it('waits for async connection callbacks before handling syncs', function(done) {
+            var connected = sinon.spy();
+
+            this.bucket.on('connection', function(client) {
+                var callback = this.async();
+
+                process.nextTick(function() {
+                    connected();
+                    callback();
+                });
+            });
+
+            this.connection = new Connection(this.bucket, this.client);
+
+            this.connection.sync('foo', function() {
+                assert.ok(connected.calledOnce);
+                done();
+            });
+        });
     });
 
     describe('when syncing', function() {
@@ -35,20 +57,25 @@ describe('Connection', function() {
             });
         });
 
-        it('passes req and res to bucket handler', function() {
-            this.bucket.handle = sinon.spy();
-            this.sync();
+        it('passes req and res to bucket handler', function(done) {
+            var self = this;
 
-            assert.ok(this.bucket.handle.calledOnce);
+            this.bucket.handle = sinon.stub().yields();
 
-            var req = this.bucket.handle.getCall(0).args[0];
-            var res = this.bucket.handle.getCall(0).args[1];
+            this.sync(function() {
+                assert.ok(self.bucket.handle.calledOnce);
 
-            assert.equal(req.action, 'foo');
-            assert.deepEqual(req.data, { foo: 'bar' });
-            assert.equal(req.baz, 'qux');
-            assert.equal(req.bucket, this.bucket);
-            assert.equal(req.client, this.client);
+                var req = self.bucket.handle.getCall(0).args[0];
+                var res = self.bucket.handle.getCall(0).args[1];
+
+                assert.equal(req.action, 'foo');
+                assert.deepEqual(req.data, { foo: 'bar' });
+                assert.equal(req.baz, 'qux');
+                assert.equal(req.bucket, self.bucket);
+                assert.equal(req.client, self.client);
+
+                done();
+            });
         });
 
         it('returns error if action is unhandled', function(done) {
