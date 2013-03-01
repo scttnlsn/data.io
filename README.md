@@ -113,6 +113,20 @@ When clients initiate a sync with the server a request object is created and pas
 * `bucket` - the bucket handling the sync
 * `client` - the Socket.IO client that initiated the request
 
+Middleware functions can use the request object for storing arbitrary data via the `get(key)` and `set(key, value)` functions:
+
+```javascript
+messages.use('create', function(req, res, next) {
+    req.set('date', new Date());
+    next();
+});
+
+messages.use(function(req, res, next) {
+    console.log(req.get('date'));
+    next();
+});
+```
+
 Response
 ---
 
