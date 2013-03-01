@@ -8,54 +8,58 @@ Example
 
 On the server:
 
-    var io = require('socket.io').listen(3000);
-    var data = require('data.io')(io);
+```javascript
+var io = require('socket.io').listen(3000);
+var data = require('data.io')(io);
 
-    var messages = data.bucket('messages');
+var messages = data.bucket('messages');
 
-    var store = {};
-    var id = 1;
+var store = {};
+var id = 1;
 
-    messages.use('create', 'update', function(req, res) {
-        var message = req.data;
-        if (!message.id) message.id = id++;
-        store[message.id] = message;
-        res.send(message);
-    });
+messages.use('create', 'update', function(req, res) {
+    var message = req.data;
+    if (!message.id) message.id = id++;
+    store[message.id] = message;
+    res.send(message);
+});
 
-    messages.use('delete', function(req, res) {
-        var message = store[req.data.id];
-        delete store[message.id];
-        res.send(message);
-    });
+messages.use('delete', function(req, res) {
+    var message = store[req.data.id];
+    delete store[message.id];
+    res.send(message);
+});
 
-    messages.use('read', function(req, res) {
-        var message = store[req.data.id];
-        res.send(message);
-    });
+messages.use('read', function(req, res) {
+    var message = store[req.data.id];
+    res.send(message);
+});
+```
 
 On the client:
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/data.io.js"></script>
+```html
+<script src="/socket.io/socket.io.js"></script>
+<script src="/data.io.js"></script>
 
-    <script>
-        var socket = data(io.connect());
-        var messages = socket.bucket('messages');
+<script>
+    var socket = data(io.connect());
+    var messages = socket.bucket('messages');
 
-        messages.subscribe('create', 'update', function(message) {
-            // Message created or updated on the server
-        });
+    messages.subscribe('create', 'update', function(message) {
+        // Message created or updated on the server
+    });
 
-        messages.subscribe('delete', function(message) {
-            // Message deleted on the server
-        });
+    messages.subscribe('delete', function(message) {
+        // Message deleted on the server
+    });
 
-        // Create a new message on the server
-        messages.sync('create', { text: 'Hello World' }, function(err, message) {
-            // Message saved
-        });
-    </script>
+    // Create a new message on the server
+    messages.sync('create', { text: 'Hello World' }, function(err, message) {
+        // Message saved
+    });
+</script>
+```
 
 Buckets
 ---
@@ -64,35 +68,39 @@ Buckets are stacks of composable middleware functions that are responsible for h
 
 For example, we could add logging middleware to a bucket:
 
-    var messages = data.bucket('messages');
+```javascript
+var messages = data.bucket('messages');
 
-    messages.use(function(req, res, next) {
-        console.log(new Date(), req.action, req.data);
-        next();
-    });
+messages.use(function(req, res, next) {
+    console.log(new Date(), req.action, req.data);
+    next();
+});
 
-    messages.use(...);
+messages.use(...);
+```
 
 Middleware can be selectively applied to particular actions by specifying them in your calls to `use`.  If a request's action does not match a particular layer then that layer will be skipped in the stack.  For example, we might want to authorize requests on create, update and delete actions:
 
-    messages.use('create', 'update', 'delete', function(req, res, next) {
-        // req.action is one of 'create', 'update' or 'delete'
+```javascript
+messages.use('create', 'update', 'delete', function(req, res, next) {
+    // req.action is one of 'create', 'update' or 'delete'
 
-        req.client.get('access token', function(err, token) {
-            if (err) return next(err);
+    req.client.get('access token', function(err, token) {
+        if (err) return next(err);
 
-            if (isAuthorized(token)) {
-                next();
-            } else {
-                next(new Error('Unauthorized'));
-            }
-        });
+        if (isAuthorized(token)) {
+            next();
+        } else {
+            next(new Error('Unauthorized'));
+        }
     });
+});
 
-    messages.use(function(req, res, next) {
-        // req.action could be anything
-        // 'create', 'update' or 'delete' is authorized
-    });
+messages.use(function(req, res, next) {
+    // req.action could be anything
+    // 'create', 'update' or 'delete' is authorized
+});
+```
 
 Request
 ---
@@ -119,15 +127,19 @@ When a client connects to a particular bucket a `connection` event is emitted on
 
 **TODO**: Implement async handling of connection events (i.e. `var callback = this.async()`).
 
-    messages.on('connection', function(client) {
-        client.set('access token', client.handshake.query.access_token);
-    });
+```javascript
+messages.on('connection', function(client) {
+    client.set('access token', client.handshake.query.access_token);
+});
+```
 
 When a response is sucessfully sent back to the client a `sync` event is emitted on the bucket and a sync object is provided.
 
-    messages.on('sync', function(sync) {
-        // Messages bucket handled a sync
-    });
+```javascript
+messages.on('sync', function(sync) {
+    // Messages bucket handled a sync
+});
+```
 
 The sync object contains the following properties:
 
@@ -143,44 +155,53 @@ And provides these methods:
 
 For example:
 
-    messages.on('sync', function(sync) {
-        // Prevent sync event from being broadcast to connected clients
-        sync.stop();
+```javascript
+messages.on('sync', function(sync) {
+    // Prevent sync event from being broadcast to connected clients
+    sync.stop();
 
-        // Notify clients in rooms 'foo' and 'bar'
-        if (sync.action !== 'read') {
-            sync.notify(sync.client.broadcast.to('foo'), sync.client.broadcast.to('bar'));
-        }
-    });
+    // Notify clients in rooms 'foo' and 'bar'
+    if (sync.action !== 'read') {
+        sync.notify(sync.client.broadcast.to('foo'), sync.client.broadcast.to('bar'));
+    }
+});
+```
 
 Client
 ---
 
 The client-side component provides a thin wrapper around Socket.IO for syncing data to the server and listening for sync events triggered by the server.
 
-    var socket = data(io.connect());
-    var messages = socket.bucket('messages');
+```javascript
+var socket = data(io.connect());
+var messages = socket.bucket('messages');
+```
 
 Make requests to the server with a bucket's `sync` function:
 
 * `sync(action, [data], [options], callback)` - perform the specified action optionally sending the given data and request options, callback takes an error and a result
 
-        messages.sync('create', { text: 'Hello World' }, function(err, result) {
-        });
+```javascript
+messages.sync('create', { text: 'Hello World' }, function(err, result) {
+
+});
+```
 
 Listen to syncs from the server with a bucket's `subscribe` function:
 
 * `subscribe([action], ..., callback)` - listen for syncs happening on the server optionally passing the actions to which the client should listen, callback accepts a result and action
 
-        // Listen to all actions
-        messages.subscribe(function(data, action) {
-            console.log(action, data);
-        });
+```javascript
+// Listen to all actions
+messages.subscribe(function(data, action) {
+    console.log(action, data);
+});
 
-        // Listen to specific actions
-        messages.subscribe('create', 'update', 'delete', function(data, action) {
-            // Action is one of 'create', 'update', or 'delete'
-        });
+// Listen to specific actions
+messages.subscribe('create', 'update', 'delete', function(data, action) {
+    // Action is one of 'create', 'update', or 'delete'
+});
+```
 
 Install
 ---
