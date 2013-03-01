@@ -125,7 +125,20 @@ When a client connects to a particular bucket a `connection` event is emitted on
 
 ```javascript
 messages.on('connection', function(client) {
-    client.set('access token', client.handshake.query.access_token);
+    console.log(new Date(), 'connected', client);
+    client.join('some room');
+});
+```
+
+If your connection event handler needs to perform an async operation, call `this.async()` from within your callback.  The connection will not handle any requests until all async operations have completed without error.
+
+```javascript
+messages.on('connection', function(client) {
+    var done = this.async();
+
+    client.set('access token', client.handshake.query.access_token, function() {
+        done();
+    });
 });
 ```
 
