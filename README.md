@@ -43,8 +43,8 @@ On the client:
 <script src="/socket.io/data.io.js"></script>
 
 <script>
-    var socket = data(io.connect());
-    var messages = socket.bucket('messages');
+    var conn = data(io.connect());
+    var messages = conn.bucket('messages');
 
     messages.subscribe('create', 'update', function(message) {
         // Message created or updated on the server
@@ -196,8 +196,8 @@ Client
 The client-side component provides a thin wrapper around Socket.IO for syncing data to the server and listening for sync events triggered by the server.
 
 ```javascript
-var socket = data(io.connect());
-var messages = socket.bucket('messages');
+var conn = data(io.connect());
+var messages = conn.bucket('messages');
 ```
 
 Make requests to the server with a bucket's `sync` function:
