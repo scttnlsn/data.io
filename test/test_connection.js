@@ -29,6 +29,10 @@ describe('Connection', function() {
             this.sync = function(callback) {
                 self.connection.sync('foo', { foo: 'bar' }, { baz: 'qux' }, callback);
             };
+
+            this.bucket.on('sync', function(sync) {
+                self.perform = sync.perform = sinon.spy();
+            });
         });
 
         it('passes req and res to bucket handler', function() {
@@ -89,6 +93,20 @@ describe('Connection', function() {
                 assert.equal(ret.bucket, self.bucket);
                 assert.equal(ret.client, self.client);
 
+                done();
+            });
+        });
+
+        it('performs defaults on sync', function(done) {
+            var self = this;
+
+            this.bucket.use(function(req, res, next) {
+                res.send('my response');
+            });
+
+            this.sync(function(err, result) {
+                if (err) return done(err);
+                assert.ok(self.perform.calledOnce);
                 done();
             });
         });

@@ -12,7 +12,3 @@ var data = require('../../lib/index')(io);
 
 var messages = data.bucket('messages');
 messages.use(store());
-
-messages.on('sync', function(sync) {
-    sync.notify(sync.client.broadcast);
-});
