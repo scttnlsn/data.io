@@ -1,6 +1,6 @@
 {
     "name": "data.io",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "Bidirectional data syncing via Socket.IO",
     "homepage": "http://github.com/scttnlsn/data.io",
     "main": "lib/index",
