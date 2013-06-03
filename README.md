@@ -226,6 +226,15 @@ messages.subscribe('create', 'update', 'delete', function(data, action) {
 });
 ```
 
+The client library can also be used server-side via the [socket.io-client](https://github.com/LearnBoost/socket.io-client) module:
+
+```javascript
+var socket = require('socket.io-client').connect('http://localhost:3000');
+var conn = require('data.io').client(socket);
+var messages = conn.resource('messages');
+// etc.
+```
+
 Install
 ---
 
