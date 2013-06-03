@@ -7,7 +7,7 @@ describe('Sync', function() {
     beforeEach(function() {
         this.req = {
             action: 'foo',
-            bucket: {},
+            resource: {},
             client: {
                 broadcast: {
                     emit: sinon.spy()
@@ -18,10 +18,10 @@ describe('Sync', function() {
         this.sync = new Sync(this.req, { foo: 'bar' });
     });
 
-    it('has action, client, bucket and result', function() {
+    it('has action, client, resource and result', function() {
         assert.equal(this.sync.action, 'foo');
         assert.equal(this.sync.client, this.req.client);
-        assert.equal(this.sync.bucket, this.req.bucket);
+        assert.equal(this.sync.resource, this.req.resource);
         assert.deepEqual(this.sync.result, { foo: 'bar' });
     });
 

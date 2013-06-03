@@ -10,7 +10,7 @@
                 var socket = io.connect();
                 var connection = data(socket);
 
-                var messages = connection.bucket('messages');
+                var messages = connection.resource('messages');
 
                 var store = (function() {
                     var models = {};

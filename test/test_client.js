@@ -7,18 +7,18 @@ describe('Client', function() {
         this.connection = client();
     });
 
-    it('creates buckets', function() {
-        assert.ok(this.connection.bucket('foo'));
+    it('creates resources', function() {
+        assert.ok(this.connection.resource('foo'));
     });
 
-    describe('bucket', function() {
+    describe('resource', function() {
         beforeEach(function() {
             var self = this;
 
             this.namespace = new events.EventEmitter();
-            this.bucket = this.connection.bucket('foo');
+            this.resource = this.connection.resource('foo');
 
-            this.bucket.namespace = function() {
+            this.resource.namespace = function() {
                 return self.namespace;
             };
         });
@@ -32,13 +32,13 @@ describe('Client', function() {
                     done();
                 });
 
-                this.bucket.sync('foo', { foo: 'bar' }, { baz: 'qux' }, done);
+                this.resource.sync('foo', { foo: 'bar' }, { baz: 'qux' }, done);
             });
         });
 
         describe('when subscribing', function() {
             it('listens to sync event', function(done) {
-                this.bucket.subscribe(function(data, options) {
+                this.resource.subscribe(function(data, options) {
                     assert.deepEqual(data, { foo: 'bar' });
                     assert.equal(options.action, 'foo');
                     done();
@@ -54,8 +54,8 @@ describe('Client', function() {
                     if (count >= 3) done();
                 };
 
-                this.bucket.subscribe('foo', 'bar', inc);
-                this.bucket.subscribe('baz', inc);
+                this.resource.subscribe('foo', 'bar', inc);
+                this.resource.subscribe('baz', inc);
 
                 this.namespace.emit('sync', 'foo', {});
                 this.namespace.emit('sync', 'bar', {});

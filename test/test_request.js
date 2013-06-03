@@ -3,20 +3,20 @@ var Request = require('../lib/request');
 
 describe('Request', function() {
     beforeEach(function() {
-        this.bucket = {};
+        this.resource = {};
         this.client = {};
 
         this.connection = {
-            bucket: this.bucket,
+            resource: this.resource,
             client: this.client
         };
 
         this.req = new Request(this.connection, 'foo', { foo: 'bar' }, { baz: 'qux' });
     });
 
-    it('has a conncetion, bucket and client', function() {
+    it('has a conncetion, resource and client', function() {
         assert.equal(this.req.connection, this.connection);
-        assert.equal(this.req.bucket, this.bucket);
+        assert.equal(this.req.resource, this.resource);
         assert.equal(this.req.client, this.client);
     });
 

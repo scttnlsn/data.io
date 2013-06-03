@@ -8,16 +8,16 @@
     }
 }('data', this, function() {
 
-    function Bucket(name, socket) {
+    function Resource(name, socket) {
         this.name = name;
         this.socket = socket;
     }
 
-    Bucket.prototype.namespace = function() {
+    Resource.prototype.namespace = function() {
         return this.socket.of(this.name);
     };
 
-    Bucket.prototype.sync = function(action, data, options, callback) {
+    Resource.prototype.sync = function(action, data, options, callback) {
         if (callback === undefined) {
             if (options === undefined && typeof data === 'function') {
                 callback = data;
@@ -32,7 +32,7 @@
         this.namespace().emit('sync', action, data, options, callback);
     };
 
-    Bucket.prototype.subscribe = function() {
+    Resource.prototype.subscribe = function() {
         var args = [].slice.apply(arguments);
         var callback = args.pop();
         var actions = args.length ? args : ['*'];
@@ -50,8 +50,8 @@
 
     return function(socket) {
         return {
-            bucket: function(name) {
-                return new Bucket(name, socket);
+            resource: function(name) {
+                return new Resource(name, socket);
             }
         };
     };

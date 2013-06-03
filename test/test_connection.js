@@ -1,30 +1,30 @@
 var assert = require('assert');
 var sinon = require('sinon');
-var Bucket = require('../lib/bucket');
+var Resource = require('../lib/resource');
 var Connection = require('../lib/connection');
 
 describe('Connection', function() {
     beforeEach(function() {
-        this.bucket = new Bucket();
+        this.resource = new Resource();
         this.client = {};
     });
 
     describe('when connecting', function() {
-        it('emits connection event on bucket', function(done) {
+        it('emits connection event on resource', function(done) {
             var self = this;
 
-            this.bucket.on('connection', function(client) {
+            this.resource.on('connection', function(client) {
                 assert.equal(client, self.client);
                 done();
             });
 
-            this.connection = new Connection(this.bucket, this.client);
+            this.connection = new Connection(this.resource, this.client);
         });
 
         it('waits for async connection callbacks before handling syncs', function(done) {
             var connected = sinon.spy();
 
-            this.bucket.on('connection', function(client) {
+            this.resource.on('connection', function(client) {
                 var callback = this.async();
 
                 process.nextTick(function() {
@@ -33,7 +33,7 @@ describe('Connection', function() {
                 });
             });
 
-            this.connection = new Connection(this.bucket, this.client);
+            this.connection = new Connection(this.resource, this.client);
 
             this.connection.sync('foo', function() {
                 assert.ok(connected.calledOnce);
@@ -46,32 +46,32 @@ describe('Connection', function() {
         beforeEach(function() {
             var self = this;
 
-            this.connection = new Connection(this.bucket, this.client);
+            this.connection = new Connection(this.resource, this.client);
 
             this.sync = function(callback) {
                 self.connection.sync('foo', { foo: 'bar' }, { baz: 'qux' }, callback);
             };
 
-            this.bucket.on('sync', function(sync) {
+            this.resource.on('sync', function(sync) {
                 self.perform = sync.perform = sinon.spy();
             });
         });
 
-        it('passes req and res to bucket handler', function(done) {
+        it('passes req and res to resource handler', function(done) {
             var self = this;
 
-            this.bucket.handle = sinon.stub().yields();
+            this.resource.handle = sinon.stub().yields();
 
             this.sync(function() {
-                assert.ok(self.bucket.handle.calledOnce);
+                assert.ok(self.resource.handle.calledOnce);
 
-                var req = self.bucket.handle.getCall(0).args[0];
-                var res = self.bucket.handle.getCall(0).args[1];
+                var req = self.resource.handle.getCall(0).args[0];
+                var res = self.resource.handle.getCall(0).args[1];
 
                 assert.equal(req.action, 'foo');
                 assert.deepEqual(req.data, { foo: 'bar' });
                 assert.equal(req.baz, 'qux');
-                assert.equal(req.bucket, self.bucket);
+                assert.equal(req.resource, self.resource);
                 assert.equal(req.client, self.client);
 
                 done();
@@ -86,7 +86,7 @@ describe('Connection', function() {
         });
 
         it('returns result sent from handler', function(done) {
-            this.bucket.use(function(req, res, next) {
+            this.resource.use(function(req, res, next) {
                 res.send('my response');
             });
 
@@ -98,15 +98,15 @@ describe('Connection', function() {
             });
         });
 
-        it('emits sync event on bucket', function(done) {
+        it('emits sync event on resource', function(done) {
             var self = this;
             var sync = sinon.spy();
 
-            this.bucket.use(function(req, res, next) {
+            this.resource.use(function(req, res, next) {
                 res.send('my response');
             });
 
-            this.bucket.on('sync', sync);
+            this.resource.on('sync', sync);
 
             this.sync(function(err, result) {
                 if (err) return done(err);
@@ -117,7 +117,7 @@ describe('Connection', function() {
                 
                 assert.equal(ret.result, 'my response');
                 assert.equal(ret.action, 'foo');
-                assert.equal(ret.bucket, self.bucket);
+                assert.equal(ret.resource, self.resource);
                 assert.equal(ret.client, self.client);
 
                 done();
@@ -127,7 +127,7 @@ describe('Connection', function() {
         it('performs defaults on sync', function(done) {
             var self = this;
 
-            this.bucket.use(function(req, res, next) {
+            this.resource.use(function(req, res, next) {
                 res.send('my response');
             });
 

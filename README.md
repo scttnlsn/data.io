@@ -12,7 +12,7 @@ On the server:
 var io = require('socket.io').listen(3000);
 var data = require('data.io')(io);
 
-var messages = data.bucket('messages');
+var messages = data.resource('messages');
 
 var store = {};
 var id = 1;
@@ -44,7 +44,7 @@ On the client:
 
 <script>
     var conn = data(io.connect());
-    var messages = conn.bucket('messages');
+    var messages = conn.resource('messages');
 
     messages.subscribe('create', 'update', function(message) {
         // Message created or updated on the server
@@ -61,15 +61,15 @@ On the client:
 </script>
 ```
 
-Buckets
+Resources
 ---
 
-Buckets are stacks of composable middleware functions that are responsible for handling sync requests from the client and responding appropriately.  Each middleware layer is a function that accepts a request and response object (as well as a function that can be called to continue execution down the stack).  A middleware layer will generally either modify the request context and pass control to the next layer or respond to the client with some kind of result or error.
+Resources are stacks of composable middleware functions that are responsible for handling sync requests from the client and responding appropriately.  Each middleware layer is a function that accepts a request and response object (as well as a function that can be called to continue execution down the stack).  A middleware layer will generally either modify the request context and pass control to the next layer or respond to the client with some kind of result or error.
 
-For example, we could add logging middleware to a bucket:
+For example, we could add logging middleware to a resource:
 
 ```javascript
-var messages = data.bucket('messages');
+var messages = data.resource('messages');
 
 messages.use(function(req, res, next) {
     console.log(new Date(), req.action, req.data);
@@ -110,7 +110,7 @@ When clients initiate a sync with the server a request object is created and pas
 * `action` - the type of sync action being performed (i.e. create, read, update, etc.)
 * `data` - any data provided by the client
 * `options` - additional options set by the client
-* `bucket` - the bucket handling the sync
+* `resource` - the resource handling the sync
 * `client` - the Socket.IO client that initiated the request
 
 Middleware functions can use the request object for storing arbitrary data via the `get(key)` and `set(key, value)` functions:
@@ -135,7 +135,7 @@ The response object provides mechanisms for responding to client requests.  It e
 Events
 ---
 
-When a client connects to a particular bucket a `connection` event is emitted on the bucket.  This can be used to perform any initialization, etc.
+When a client connects to a particular resource a `connection` event is emitted on the resource.  This can be used to perform any initialization, etc.
 
 ```javascript
 messages.on('connection', function(client) {
@@ -156,18 +156,18 @@ messages.on('connection', function(client) {
 });
 ```
 
-When a response is sucessfully sent back to the client a `sync` event is emitted on the bucket and a sync object is provided.
+When a response is sucessfully sent back to the client a `sync` event is emitted on the resource and a sync object is provided.
 
 ```javascript
 messages.on('sync', function(sync) {
-    // Messages bucket handled a sync
+    // Messages resource handled a sync
 });
 ```
 
 The sync object contains the following properties:
 
 * `client` - the client that initiated the sync
-* `bucket` - the bucket that handled the sync
+* `resource` - the resource that handled the sync
 * `action` - the sync action performed
 * `result` - the result returned to the client
 
@@ -197,10 +197,10 @@ The client-side component provides a thin wrapper around Socket.IO for syncing d
 
 ```javascript
 var conn = data(io.connect());
-var messages = conn.bucket('messages');
+var messages = conn.resource('messages');
 ```
 
-Make requests to the server with a bucket's `sync` function:
+Make requests to the server with a resource's `sync` function:
 
 * `sync(action, [data], [options], callback)` - perform the specified action optionally sending the given data and request options, callback takes an error and a result
 
@@ -210,7 +210,7 @@ messages.sync('create', { text: 'Hello World' }, function(err, result) {
 });
 ```
 
-Listen to syncs from the server with a bucket's `subscribe` function:
+Listen to syncs from the server with a resource's `subscribe` function:
 
 * `subscribe([action], ..., callback)` - listen for syncs happening on the server optionally passing the actions to which the client should listen, callback accepts a result and action
 
