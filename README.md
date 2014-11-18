@@ -3,6 +3,9 @@ data.io
 
 Bidirectional data syncing via Socket.IO
 
+[![NPM](https://img.shields.io/npm/v/data.io.svg?style=flat)](http://npm.im/data.io)
+[![Build Status](https://travis-ci.org/scttnlsn/data.io.png?branch=master)](https://travis-ci.org/scttnlsn/data.io)
+
 Example
 ---
 
