@@ -248,7 +248,7 @@ Test
 License
 ---
 
-Copyright (C) 2013 Scott Nelson
+Copyright (C) 2013-2014 Scott Nelson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
