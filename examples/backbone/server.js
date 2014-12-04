@@ -9,8 +9,4 @@ var io = require('socket.io').listen(server);
 var data = require('../../lib/index')(io);
 
 var messages = data.resource('messages');
-messages.use('delete', function (req, res, next) {
-    asdf;
-    next();
-});
 messages.use(require('../middleware/memory-store')());
