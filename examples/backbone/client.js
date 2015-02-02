@@ -1,30 +1,29 @@
 var example = window.example || (window.example = {});
 
-var socket = io.connect();
-var connection = data(socket);
+var connection = data(io.connect());
 
 var MessageView = Backbone.View.extend({
-    
+
     tagName: 'li',
-    
+
     events: {
         'click .delete': 'delete'
     },
-    
+
     initialize: function () {
         this.template = _.template($('#message-template').html());
     },
-    
+
     render: function () {
         $(this.el).html(this.template(this.model.toJSON()));
         return this;
     },
-    
+
     delete: function (e) {
         e.preventDefault();
         this.model.destroy();
     }
-    
+
 });
 
 var MessagesView = Backbone.View.extend({
@@ -42,12 +41,12 @@ var MessagesView = Backbone.View.extend({
 
     render: function () {
         $(this.el).html(this.template());
-        
+
         this.messages.each(function (message) {
             var view = new MessageView({ model: message });
             this.$('ul').append(view.render().el);
         }.bind(this));
-        
+
         return this;
     },
 
@@ -69,7 +68,7 @@ var MessagesView = Backbone.View.extend({
 
         this.clearText();
     },
-    
+
     keypress: function (e) {
         if (e.which === 13) this.send();
     }

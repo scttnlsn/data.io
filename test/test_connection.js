@@ -114,7 +114,7 @@ describe('Connection', function() {
                 assert.ok(sync.calledOnce);
 
                 var ret = sync.getCall(0).args[0];
-                
+
                 assert.equal(ret.result, 'my response');
                 assert.equal(ret.action, 'foo');
                 assert.equal(ret.resource, self.resource);

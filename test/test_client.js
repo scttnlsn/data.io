@@ -4,7 +4,16 @@ var client = require('../data.io');
 
 describe('Client', function() {
     beforeEach(function() {
-        this.connection = client();
+        var self = this
+        this.namespace = new events.EventEmitter();
+
+        this.connection = client({
+            io: {
+                socket: function () {
+                    return self.namespace;
+                }
+            }
+        });
     });
 
     it('creates resources', function() {
@@ -13,14 +22,7 @@ describe('Client', function() {
 
     describe('resource', function() {
         beforeEach(function() {
-            var self = this;
-
-            this.namespace = new events.EventEmitter();
             this.resource = this.connection.resource('foo');
-
-            this.resource.namespace = function() {
-                return self.namespace;
-            };
         });
 
         describe('when syncing', function() {

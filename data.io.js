@@ -10,12 +10,8 @@
 
     function Resource(name, socket) {
         this.name = name;
-        this.socket = socket;
+        this.socket = socket.io.socket('/' + this.name);
     }
-
-    Resource.prototype.namespace = function() {
-        return this.socket.of(this.name);
-    };
 
     Resource.prototype.sync = function(action, data, options, callback) {
         if (callback === undefined) {
@@ -29,7 +25,7 @@
             }
         }
 
-        this.namespace().emit('sync', action, data, options, callback);
+        this.socket.emit('sync', action, data, options, callback);
     };
 
     Resource.prototype.subscribe = function() {
@@ -41,7 +37,7 @@
             return actions.indexOf(action) !== -1;
         };
 
-        this.namespace().on('sync', function(action, data) {
+        this.socket.on('sync', function(action, data) {
             if (valid(action) || valid('*')) {
                 callback(data, { action: action });
             }

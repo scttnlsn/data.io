@@ -19,6 +19,14 @@ app.use(expressSession(session));
 // Serve `backbone` example client
 app.use(express.static(path.dirname(__dirname) + '/backbone'));
 
+app.get('/status', function (req, res) {
+    if (req.session.user) {
+        res.send('You are logged in');
+    } else {
+        res.send('You are not logged in');
+    }
+});
+
 app.get('/login', function (req, res) {
     req.session.user = 'some user';
     res.redirect('/');

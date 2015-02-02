@@ -43,7 +43,7 @@ On the client:
 
 ```html
 <script src="/socket.io/socket.io.js"></script>
-<script src="/socket.io/data.io.js"></script>
+<script src="/data.io.js"></script>
 
 <script>
     var conn = data(io.connect());
@@ -251,7 +251,7 @@ Test
 License
 ---
 
-Copyright (C) 2013-2014 Scott Nelson
+Copyright (C) 2013-2015 Scott Nelson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
