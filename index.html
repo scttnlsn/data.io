@@ -29,107 +29,106 @@
       </header>
       <section>
         <h1>
-<a name="dataio" class="anchor" href="#dataio"><span class="octicon octicon-link"></span></a>data.io</h1>
+<a id="dataio" class="anchor" href="#dataio" aria-hidden="true"><span class="octicon octicon-link"></span></a>data.io</h1>
 
 <p>Bidirectional data syncing via Socket.IO</p>
 
+<p><a href="http://npm.im/data.io"><img src="https://img.shields.io/npm/v/data.io.svg?style=flat" alt="NPM"></a>
+<a href="https://travis-ci.org/scttnlsn/data.io"><img src="https://img.shields.io/travis/scttnlsn/data.io.svg?style=flat" alt="Build Status"></a></p>
+
 <h2>
-<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
 
 <p>On the server:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">io</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'socket.io'</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'data.io'</span><span class="p">)(</span><span class="nx">io</span><span class="p">);</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> io <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>socket.io<span class="pl-pds">'</span></span>).listen(<span class="pl-c1">3000</span>);
+<span class="pl-s">var</span> data <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>data.io<span class="pl-pds">'</span></span>)(io);
 
-<span class="kd">var</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">resource</span><span class="p">(</span><span class="s1">'messages'</span><span class="p">);</span>
+<span class="pl-s">var</span> messages <span class="pl-k">=</span> data.resource(<span class="pl-s1"><span class="pl-pds">'</span>messages<span class="pl-pds">'</span></span>);
 
-<span class="kd">var</span> <span class="nx">store</span> <span class="o">=</span> <span class="p">{};</span>
-<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="pl-s">var</span> store <span class="pl-k">=</span> {};
+<span class="pl-s">var</span> id <span class="pl-k">=</span> <span class="pl-c1">1</span>;
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">message</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="nx">message</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="o">++</span><span class="p">;</span>
-    <span class="nx">store</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
-    <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-<span class="p">});</span>
+messages.use(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>) {
+    <span class="pl-s">var</span> message <span class="pl-k">=</span> req.<span class="pl-sc">data</span>;
+    <span class="pl-k">if</span> (<span class="pl-k">!</span>message.<span class="pl-sc">id</span>) message.<span class="pl-sc">id</span> <span class="pl-k">=</span> id<span class="pl-k">++</span>;
+    store[message.<span class="pl-sc">id</span>] <span class="pl-k">=</span> message;
+    res.<span class="pl-s3">send</span>(message);
+});
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'delete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">store</span><span class="p">[</span><span class="nx">req</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">id</span><span class="p">];</span>
-    <span class="k">delete</span> <span class="nx">store</span><span class="p">[</span><span class="nx">message</span><span class="p">.</span><span class="nx">id</span><span class="p">];</span>
-    <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-<span class="p">});</span>
+messages.use(<span class="pl-s1"><span class="pl-pds">'</span>delete<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>) {
+    <span class="pl-s">var</span> message <span class="pl-k">=</span> store[req.<span class="pl-sc">data</span>.<span class="pl-sc">id</span>];
+    <span class="pl-k">delete</span> store[message.<span class="pl-sc">id</span>];
+    res.<span class="pl-s3">send</span>(message);
+});
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'read'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">store</span><span class="p">[</span><span class="nx">req</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">id</span><span class="p">];</span>
-    <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+messages.use(<span class="pl-s1"><span class="pl-pds">'</span>read<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>) {
+    <span class="pl-s">var</span> message <span class="pl-k">=</span> store[req.<span class="pl-sc">data</span>.<span class="pl-sc">id</span>];
+    res.<span class="pl-s3">send</span>(message);
+});</pre></div>
 
 <p>On the client:</p>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/socket.io/socket.io.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/socket.io/data.io.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>/socket.io/socket.io.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>/data.io.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
 
-<span class="nt">&lt;script&gt;</span>
-    <span class="kd">var</span> <span class="nx">conn</span> <span class="o">=</span> <span class="nx">data</span><span class="p">(</span><span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">());</span>
-    <span class="kd">var</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">resource</span><span class="p">(</span><span class="s1">'messages'</span><span class="p">);</span>
-
-    <span class="nx">messages</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Message created or updated on the server</span>
-    <span class="p">});</span>
-
-    <span class="nx">messages</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'delete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Message deleted on the server</span>
-    <span class="p">});</span>
-
-    <span class="c1">// Create a new message on the server</span>
-    <span class="nx">messages</span><span class="p">.</span><span class="nx">sync</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">'Hello World'</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Message saved</span>
-    <span class="p">});</span>
-<span class="nt">&lt;/script&gt;</span>
-</pre></div>
+<span class="pl-s2">&lt;<span class="pl-ent">script</span>&gt;</span>
+<span class="pl-s2">    <span class="pl-s">var</span> conn <span class="pl-k">=</span> data(io.connect());</span>
+<span class="pl-s2">    <span class="pl-s">var</span> messages <span class="pl-k">=</span> conn.resource(<span class="pl-s1"><span class="pl-pds">'</span>messages<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    messages.subscribe(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">message</span>) {</span>
+<span class="pl-s2">        <span class="pl-c">// Message created or updated on the server</span></span>
+<span class="pl-s2">    });</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    messages.subscribe(<span class="pl-s1"><span class="pl-pds">'</span>delete<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">message</span>) {</span>
+<span class="pl-s2">        <span class="pl-c">// Message deleted on the server</span></span>
+<span class="pl-s2">    });</span>
+<span class="pl-s2"></span>
+<span class="pl-s2">    <span class="pl-c">// Create a new message on the server</span></span>
+<span class="pl-s2">    messages.sync(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, { text<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Hello World<span class="pl-pds">'</span></span> }, <span class="pl-st">function</span>(<span class="pl-vpf">err</span>, <span class="pl-vpf">message</span>) {</span>
+<span class="pl-s2">        <span class="pl-c">// Message saved</span></span>
+<span class="pl-s2">    });</span>
+<span class="pl-s2">&lt;/<span class="pl-ent">script</span>&gt;</span></pre></div>
 
 <h2>
-<a name="resources" class="anchor" href="#resources"><span class="octicon octicon-link"></span></a>Resources</h2>
+<a id="resources" class="anchor" href="#resources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Resources</h2>
 
 <p>Resources are stacks of composable middleware functions that are responsible for handling sync requests from the client and responding appropriately.  Each middleware layer is a function that accepts a request and response object (as well as a function that can be called to continue execution down the stack).  A middleware layer will generally either modify the request context and pass control to the next layer or respond to the client with some kind of result or error.</p>
 
 <p>For example, we could add logging middleware to a resource:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">resource</span><span class="p">(</span><span class="s1">'messages'</span><span class="p">);</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> messages <span class="pl-k">=</span> data.resource(<span class="pl-s1"><span class="pl-pds">'</span>messages<span class="pl-pds">'</span></span>);
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">req</span><span class="p">.</span><span class="nx">action</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
-    <span class="nx">next</span><span class="p">();</span>
-<span class="p">});</span>
+messages.use(<span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>, <span class="pl-vpf">next</span>) {
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-k">new</span> <span class="pl-en">Date</span>(), req.<span class="pl-sc">action</span>, req.<span class="pl-sc">data</span>);
+    next();
+});
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(...);</span>
-</pre></div>
+messages.use(...);</pre></div>
 
 <p>Middleware can be selectively applied to particular actions by specifying them in your calls to <code>use</code>.  If a request's action does not match a particular layer then that layer will be skipped in the stack.  For example, we might want to authorize requests on create, update and delete actions:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="s1">'delete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// req.action is one of 'create', 'update' or 'delete'</span>
+<div class="highlight highlight-javascript"><pre>messages.use(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>delete<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>, <span class="pl-vpf">next</span>) {
+    <span class="pl-c">// req.action is one of 'create', 'update' or 'delete'</span>
 
-    <span class="nx">req</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'access token'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    req.client.get(<span class="pl-s1"><span class="pl-pds">'</span>access token<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">err</span>, <span class="pl-vpf">token</span>) {
+        <span class="pl-k">if</span> (err) <span class="pl-k">return</span> next(err);
 
-        <span class="k">if</span> <span class="p">(</span><span class="nx">isAuthorized</span><span class="p">(</span><span class="nx">token</span><span class="p">))</span> <span class="p">{</span>
-            <span class="nx">next</span><span class="p">();</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">next</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'Unauthorized'</span><span class="p">));</span>
-        <span class="p">}</span>
-    <span class="p">});</span>
-<span class="p">});</span>
+        <span class="pl-k">if</span> (isAuthorized(token)) {
+            next();
+        } <span class="pl-k">else</span> {
+            next(<span class="pl-k">new</span> <span class="pl-en">Error</span>(<span class="pl-s1"><span class="pl-pds">'</span>Unauthorized<span class="pl-pds">'</span></span>));
+        }
+    });
+});
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// req.action could be anything</span>
-    <span class="c1">// 'create', 'update' or 'delete' is authorized</span>
-<span class="p">});</span>
-</pre></div>
+messages.use(<span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>, <span class="pl-vpf">next</span>) {
+    <span class="pl-c">// req.action could be anything</span>
+    <span class="pl-c">// 'create', 'update' or 'delete' is authorized</span>
+});</pre></div>
 
 <h2>
-<a name="request" class="anchor" href="#request"><span class="octicon octicon-link"></span></a>Request</h2>
+<a id="request" class="anchor" href="#request" aria-hidden="true"><span class="octicon octicon-link"></span></a>Request</h2>
 
 <p>When clients initiate a sync with the server a request object is created and passed through the middleware stack.  A request object will contain the following properties:</p>
 
@@ -144,52 +143,50 @@
 <code>resource</code> - the resource handling the sync</li>
 <li>
 <code>client</code> - the Socket.IO client that initiated the request</li>
-</ul><p>Middleware functions can use the request object for storing arbitrary data via the <code>get(key)</code> and <code>set(key, value)</code> functions:</p>
+</ul>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">req</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">());</span>
-    <span class="nx">next</span><span class="p">();</span>
-<span class="p">});</span>
+<p>Middleware functions can use the request object for storing arbitrary data via the <code>get(key)</code> and <code>set(key, value)</code> functions:</p>
 
-<span class="nx">messages</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">));</span>
-    <span class="nx">next</span><span class="p">();</span>
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>messages.use(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>, <span class="pl-vpf">next</span>) {
+    req.set(<span class="pl-s1"><span class="pl-pds">'</span>date<span class="pl-pds">'</span></span>, <span class="pl-k">new</span> <span class="pl-en">Date</span>());
+    next();
+});
+
+messages.use(<span class="pl-st">function</span>(<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>, <span class="pl-vpf">next</span>) {
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(req.get(<span class="pl-s1"><span class="pl-pds">'</span>date<span class="pl-pds">'</span></span>));
+    next();
+});</pre></div>
 
 <h2>
-<a name="response" class="anchor" href="#response"><span class="octicon octicon-link"></span></a>Response</h2>
+<a id="response" class="anchor" href="#response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Response</h2>
 
 <p>The response object provides mechanisms for responding to client requests.  It exposes two function <code>send</code> and <code>error</code> that can be used for returning results or errors back to the client.</p>
 
 <h2>
-<a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
+<a id="events" class="anchor" href="#events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Events</h2>
 
 <p>When a client connects to a particular resource a <code>connection</code> event is emitted on the resource.  This can be used to perform any initialization, etc.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'connection'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="s1">'connected'</span><span class="p">,</span> <span class="nx">client</span><span class="p">);</span>
-    <span class="nx">client</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'some room'</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>messages.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">client</span>) {
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-k">new</span> <span class="pl-en">Date</span>(), <span class="pl-s1"><span class="pl-pds">'</span>connected<span class="pl-pds">'</span></span>, client);
+    client.<span class="pl-s3">join</span>(<span class="pl-s1"><span class="pl-pds">'</span>some room<span class="pl-pds">'</span></span>);
+});</pre></div>
 
 <p>If your connection event handler needs to perform an async operation, call <code>this.async()</code> from within your callback.  The connection will not handle any requests until all async operations have completed without error.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'connection'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">async</span><span class="p">();</span>
+<div class="highlight highlight-javascript"><pre>messages.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">client</span>) {
+    <span class="pl-s">var</span> done <span class="pl-k">=</span> <span class="pl-v">this</span>.async();
 
-    <span class="nx">client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'access token'</span><span class="p">,</span> <span class="nx">client</span><span class="p">.</span><span class="nx">handshake</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">access_token</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">done</span><span class="p">();</span>
-    <span class="p">});</span>
-<span class="p">});</span>
-</pre></div>
+    client.set(<span class="pl-s1"><span class="pl-pds">'</span>access token<span class="pl-pds">'</span></span>, client.handshake.query.access_token, <span class="pl-st">function</span>() {
+        done();
+    });
+});</pre></div>
 
 <p>When a response is sucessfully sent back to the client a <code>sync</code> event is emitted on the resource and a sync object is provided.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'sync'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sync</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Messages resource handled a sync</span>
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>messages.on(<span class="pl-s1"><span class="pl-pds">'</span>sync<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">sync</span>) {
+    <span class="pl-c">// Messages resource handled a sync</span>
+});</pre></div>
 
 <p>The sync object contains the following properties:</p>
 
@@ -202,85 +199,88 @@
 <code>action</code> - the sync action performed</li>
 <li>
 <code>result</code> - the result returned to the client</li>
-</ul><p>And provides these methods:</p>
+</ul>
+
+<p>And provides these methods:</p>
 
 <ul>
 <li>
 <code>notify(emitter, ...)</code> - emit a sync event on the given emitters</li>
 <li>
 <code>stop()</code> - stop the default notification (syncs are broadcast to all clients by default)</li>
-</ul><p>For example:</p>
+</ul>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'sync'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">sync</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Prevent sync event from being broadcast to connected clients</span>
-    <span class="nx">sync</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+<p>For example:</p>
 
-    <span class="c1">// Notify clients in rooms 'foo' and 'bar'</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">sync</span><span class="p">.</span><span class="nx">action</span> <span class="o">!==</span> <span class="s1">'read'</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">sync</span><span class="p">.</span><span class="nx">notify</span><span class="p">(</span><span class="nx">sync</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">.</span><span class="nx">to</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">),</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">.</span><span class="nx">to</span><span class="p">(</span><span class="s1">'bar'</span><span class="p">));</span>
-    <span class="p">}</span>
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>messages.on(<span class="pl-s1"><span class="pl-pds">'</span>sync<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">sync</span>) {
+    <span class="pl-c">// Prevent sync event from being broadcast to connected clients</span>
+    sync.<span class="pl-s3">stop</span>();
+
+    <span class="pl-c">// Notify clients in rooms 'foo' and 'bar'</span>
+    <span class="pl-k">if</span> (sync.<span class="pl-sc">action</span> <span class="pl-k">!==</span> <span class="pl-s1"><span class="pl-pds">'</span>read<span class="pl-pds">'</span></span>) {
+        sync.notify(sync.client.broadcast.to(<span class="pl-s1"><span class="pl-pds">'</span>foo<span class="pl-pds">'</span></span>), sync.client.broadcast.to(<span class="pl-s1"><span class="pl-pds">'</span>bar<span class="pl-pds">'</span></span>));
+    }
+});</pre></div>
 
 <h2>
-<a name="client" class="anchor" href="#client"><span class="octicon octicon-link"></span></a>Client</h2>
+<a id="client" class="anchor" href="#client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Client</h2>
 
 <p>The client-side component provides a thin wrapper around Socket.IO for syncing data to the server and listening for sync events triggered by the server.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">conn</span> <span class="o">=</span> <span class="nx">data</span><span class="p">(</span><span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">());</span>
-<span class="kd">var</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">resource</span><span class="p">(</span><span class="s1">'messages'</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> conn <span class="pl-k">=</span> data(io.connect());
+<span class="pl-s">var</span> messages <span class="pl-k">=</span> conn.resource(<span class="pl-s1"><span class="pl-pds">'</span>messages<span class="pl-pds">'</span></span>);</pre></div>
 
 <p>Make requests to the server with a resource's <code>sync</code> function:</p>
 
 <ul>
 <li>
 <code>sync(action, [data], [options], callback)</code> - perform the specified action optionally sending the given data and request options, callback takes an error and a result</li>
-</ul><div class="highlight highlight-javascript"><pre><span class="nx">messages</span><span class="p">.</span><span class="nx">sync</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">'Hello World'</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</ul>
 
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>messages.sync(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, { text<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Hello World<span class="pl-pds">'</span></span> }, <span class="pl-st">function</span>(<span class="pl-vpf">err</span>, <span class="pl-vpf">result</span>) {
+
+});</pre></div>
 
 <p>Listen to syncs from the server with a resource's <code>subscribe</code> function:</p>
 
 <ul>
 <li>
 <code>subscribe([action], ..., callback)</code> - listen for syncs happening on the server optionally passing the actions to which the client should listen, callback accepts a result and action</li>
-</ul><div class="highlight highlight-javascript"><pre><span class="c1">// Listen to all actions</span>
-<span class="nx">messages</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
-<span class="p">});</span>
+</ul>
 
-<span class="c1">// Listen to specific actions</span>
-<span class="nx">messages</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'create'</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="s1">'delete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Action is one of 'create', 'update', or 'delete'</span>
-<span class="p">});</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// Listen to all actions</span>
+messages.subscribe(<span class="pl-st">function</span>(<span class="pl-vpf">data</span>, <span class="pl-vpf">action</span>) {
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(action, data);
+});
+
+<span class="pl-c">// Listen to specific actions</span>
+messages.subscribe(<span class="pl-s1"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>delete<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>, <span class="pl-vpf">action</span>) {
+    <span class="pl-c">// Action is one of 'create', 'update', or 'delete'</span>
+});</pre></div>
 
 <p>The client library can also be used server-side via the <a href="https://github.com/LearnBoost/socket.io-client">socket.io-client</a> module:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'socket.io-client'</span><span class="p">).</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'http://localhost:3000'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">conn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'data.io'</span><span class="p">).</span><span class="nx">client</span><span class="p">(</span><span class="nx">socket</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">messages</span> <span class="o">=</span> <span class="nx">conn</span><span class="p">.</span><span class="nx">resource</span><span class="p">(</span><span class="s1">'messages'</span><span class="p">);</span>
-<span class="c1">// etc.</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> socket <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>socket.io-client<span class="pl-pds">'</span></span>).connect(<span class="pl-s1"><span class="pl-pds">'</span>http://localhost:3000<span class="pl-pds">'</span></span>);
+<span class="pl-s">var</span> conn <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>data.io<span class="pl-pds">'</span></span>).client(socket);
+<span class="pl-s">var</span> messages <span class="pl-k">=</span> conn.resource(<span class="pl-s1"><span class="pl-pds">'</span>messages<span class="pl-pds">'</span></span>);
+<span class="pl-c">// etc.</span></pre></div>
 
 <h2>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
 
 <pre><code>npm install data.io
 </code></pre>
 
 <h2>
-<a name="test" class="anchor" href="#test"><span class="octicon octicon-link"></span></a>Test</h2>
+<a id="test" class="anchor" href="#test" aria-hidden="true"><span class="octicon octicon-link"></span></a>Test</h2>
 
 <pre><code>npm test
 </code></pre>
 
 <h2>
-<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
 
-<p>Copyright (C) 2013 Scott Nelson</p>
+<p>Copyright (C) 2013-2015 Scott Nelson</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
