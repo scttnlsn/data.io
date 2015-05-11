@@ -20,22 +20,22 @@ var messages = data.resource('messages');
 var store = {};
 var id = 1;
 
-messages.use('create', 'update', function(req, res) {
-    var message = req.data;
-    if (!message.id) message.id = id++;
-    store[message.id] = message;
-    res.send(message);
+messages.use('create', 'update', function (req, res) {
+  var message = req.data;
+  if (!message.id) message.id = id++;
+  store[message.id] = message;
+  res.send(message);
 });
 
-messages.use('delete', function(req, res) {
-    var message = store[req.data.id];
-    delete store[message.id];
-    res.send(message);
+messages.use('delete', function (req, res) {
+  var message = store[req.data.id];
+  delete store[message.id];
+  res.send(message);
 });
 
-messages.use('read', function(req, res) {
-    var message = store[req.data.id];
-    res.send(message);
+messages.use('read', function (req, res) {
+  var message = store[req.data.id];
+  res.send(message);
 });
 ```
 
@@ -46,21 +46,21 @@ On the client:
 <script src="/data.io.js"></script>
 
 <script>
-    var conn = data(io.connect());
-    var messages = conn.resource('messages');
+  var conn = data(io.connect());
+  var messages = conn.resource('messages');
 
-    messages.subscribe('create', 'update', function(message) {
-        // Message created or updated on the server
-    });
+  messages.subscribe('create', 'update', function (message) {
+    // Message created or updated on the server
+  });
 
-    messages.subscribe('delete', function(message) {
-        // Message deleted on the server
-    });
+  messages.subscribe('delete', function (message) {
+    // Message deleted on the server
+  });
 
-    // Create a new message on the server
-    messages.sync('create', { text: 'Hello World' }, function(err, message) {
-        // Message saved
-    });
+  // Create a new message on the server
+  messages.sync('create', { text: 'Hello World' }, function (err, message) {
+    // Message saved
+  });
 </script>
 ```
 
@@ -74,9 +74,9 @@ For example, we could add logging middleware to a resource:
 ```javascript
 var messages = data.resource('messages');
 
-messages.use(function(req, res, next) {
-    console.log(new Date(), req.action, req.data);
-    next();
+messages.use(function (req, res, next) {
+  console.log(new Date(), req.action, req.data);
+  next();
 });
 
 messages.use(...);
@@ -86,22 +86,22 @@ Middleware can be selectively applied to particular actions by specifying them i
 
 ```javascript
 messages.use('create', 'update', 'delete', function(req, res, next) {
-    // req.action is one of 'create', 'update' or 'delete'
+  // req.action is one of 'create', 'update' or 'delete'
 
-    req.client.get('access token', function(err, token) {
-        if (err) return next(err);
+  req.client.get('access token', function (err, token) {
+    if (err) return next(err);
 
-        if (isAuthorized(token)) {
-            next();
-        } else {
-            next(new Error('Unauthorized'));
-        }
-    });
+    if (isAuthorized(token)) {
+      next();
+    } else {
+      next(new Error('Unauthorized'));
+    }
+  });
 });
 
-messages.use(function(req, res, next) {
-    // req.action could be anything
-    // 'create', 'update' or 'delete' is authorized
+messages.use(function (req, res, next) {
+  // req.action could be anything
+  // 'create', 'update' or 'delete' is authorized
 });
 ```
 
@@ -119,14 +119,14 @@ When clients initiate a sync with the server a request object is created and pas
 Middleware functions can use the request object for storing arbitrary data via the `get(key)` and `set(key, value)` functions:
 
 ```javascript
-messages.use('create', function(req, res, next) {
-    req.set('date', new Date());
-    next();
+messages.use('create', function (req, res, next) {
+  req.set('date', new Date());
+  next();
 });
 
-messages.use(function(req, res, next) {
-    console.log(req.get('date'));
-    next();
+messages.use(function (req, res, next) {
+  console.log(req.get('date'));
+  next();
 });
 ```
 
@@ -141,9 +141,9 @@ Events
 When a client connects to a particular resource a `connection` event is emitted on the resource.  This can be used to perform any initialization, etc.
 
 ```javascript
-messages.on('connection', function(client) {
-    console.log(new Date(), 'connected', client);
-    client.join('some room');
+messages.on('connection', function (client) {
+  console.log(new Date(), 'connected', client);
+  client.join('some room');
 });
 ```
 
@@ -151,19 +151,19 @@ If your connection event handler needs to perform an async operation, call `this
 
 ```javascript
 messages.on('connection', function(client) {
-    var done = this.async();
+  var done = this.async();
 
-    client.set('access token', client.handshake.query.access_token, function() {
-        done();
-    });
+  client.set('access token', client.handshake.query.access_token, function () {
+    done();
+  });
 });
 ```
 
 When a response is sucessfully sent back to the client a `sync` event is emitted on the resource and a sync object is provided.
 
 ```javascript
-messages.on('sync', function(sync) {
-    // Messages resource handled a sync
+messages.on('sync', function (sync) {
+  // Messages resource handled a sync
 });
 ```
 
@@ -182,14 +182,14 @@ And provides these methods:
 For example:
 
 ```javascript
-messages.on('sync', function(sync) {
-    // Prevent sync event from being broadcast to connected clients
-    sync.stop();
+messages.on('sync', function (sync) {
+  // Prevent sync event from being broadcast to connected clients
+  sync.stop();
 
-    // Notify clients in rooms 'foo' and 'bar'
-    if (sync.action !== 'read') {
-        sync.notify(sync.client.broadcast.to('foo'), sync.client.broadcast.to('bar'));
-    }
+  // Notify clients in rooms 'foo' and 'bar'
+  if (sync.action !== 'read') {
+    sync.notify(sync.client.broadcast.to('foo'), sync.client.broadcast.to('bar'));
+  }
 });
 ```
 
@@ -208,7 +208,7 @@ Make requests to the server with a resource's `sync` function:
 * `sync(action, [data], [options], callback)` - perform the specified action optionally sending the given data and request options, callback takes an error and a result
 
 ```javascript
-messages.sync('create', { text: 'Hello World' }, function(err, result) {
+messages.sync('create', { text: 'Hello World' }, function (err, result) {
 
 });
 ```
@@ -219,13 +219,13 @@ Listen to syncs from the server with a resource's `subscribe` function:
 
 ```javascript
 // Listen to all actions
-messages.subscribe(function(data, action) {
-    console.log(action, data);
+messages.subscribe(function (data, action) {
+  console.log(action, data);
 });
 
 // Listen to specific actions
-messages.subscribe('create', 'update', 'delete', function(data, action) {
-    // Action is one of 'create', 'update', or 'delete'
+messages.subscribe('create', 'update', 'delete', function (data, action) {
+  // Action is one of 'create', 'update', or 'delete'
 });
 ```
 

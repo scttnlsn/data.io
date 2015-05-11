@@ -1,37 +1,37 @@
 {
-    "name": "data.io",
-    "version": "0.3.0",
-    "description": "Bidirectional data syncing via Socket.IO",
-    "homepage": "http://github.com/scttnlsn/data.io",
-    "main": "lib/index",
+  "name": "data.io",
+  "version": "0.3.0",
+  "description": "Bidirectional data syncing via Socket.IO",
+  "homepage": "http://github.com/scttnlsn/data.io",
+  "main": "lib/index",
 
-    "author": {
-        "name": "Scott Nelson",
-        "email": "scott@scttnlsn.com",
-        "web": "http://scttnlsn.com"
-    },
+  "author": {
+    "name": "Scott Nelson",
+    "email": "scott@scttnlsn.com",
+    "web": "http://scttnlsn.com"
+  },
 
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/scttnlsn/data.io.git"
-    },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scttnlsn/data.io.git"
+  },
 
-    "scripts": {
-        "test": "./node_modules/.bin/mocha"
-    },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
 
-    "dependencies": {
-        "q": "0.9.x"
-    },
+  "dependencies": {
+    "q": "0.9.x"
+  },
 
-    "devDependencies": {
-        "mocha": "1.8.x",
-        "sinon": "1.6.x",
-        "socket.io": "1.3.x",
+  "devDependencies": {
+    "mocha": "1.8.x",
+    "sinon": "1.6.x",
+    "socket.io": "1.3.x",
 
-        "express": "4.10.2",
-        "express-session": "1.9.1",
-        "cookie-parser": "1.3.3",
-        "socket.io-client": "1.3.x"
-    }
+    "express": "4.10.2",
+    "express-session": "1.9.1",
+    "cookie-parser": "1.3.3",
+    "socket.io-client": "1.3.x"
+  }
 }

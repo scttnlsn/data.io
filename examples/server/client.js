@@ -5,13 +5,13 @@ var connection = require('../../lib/index').client(socket);
 var messages = connection.resource('messages');
 
 messages.sync('create', function (err, result) {
-    if (err) throw err;
+  if (err) throw err;
 
-    setInterval(function () {
-        messages.sync('update', { id: result.id, text: new Date() });
-    }, 1000);
+  setInterval(function () {
+    messages.sync('update', { id: result.id, text: new Date() });
+  }, 1000);
 });
 
 messages.subscribe(function (message, info) {
-    console.log('Message received:', message, info);
+  console.log('Message received:', message, info);
 });
